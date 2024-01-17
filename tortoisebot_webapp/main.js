@@ -8,7 +8,7 @@ var app = new Vue({
         ros: null,
         logs: [],
         loading: false,
-        rosbridge_address: 'wss://i-03eb35553921317ea.robotigniteacademy.com/1fbc6a37-261f-4ae0-956f-ec3b14c5fc55/rosbridge/',
+        rosbridge_address: 'wss://i-016ab264be577d6bf.robotigniteacademy.com/65624ca6-92e5-402c-a347-1f183dcfb868/rosbridge/',
         port: '9090',
 
         // dragging data
@@ -30,6 +30,10 @@ var app = new Vue({
         },
         // publisher
         pubInterval: null,
+        // map
+        mapViewer: null,
+        mapGridClient: null,
+        interval: null,
 
     },
 
@@ -48,10 +52,45 @@ var app = new Vue({
                 this.logs.unshift((new Date()).toTimeString() + ' - Connected!')
                 this.connected = true
                 this.loading = false
+                
                 // Interval for const topic publish with joint
                 this.pubInterval = setInterval(this.publish, 100)
+                
                 // Setting up the robot camera
                 this.setCamera()
+                
+                // Setting map
+                this.mapViewer = new ROS2D.Viewer({
+                    divID: 'map',
+                    width: 420,
+                    height: 360
+                })
+
+                // Setup the map client.
+                this.mapGridClient = new ROS2D.OccupancyGridClient({
+                    ros: this.ros,
+                    rootObject: this.mapViewer.scene,
+                    continuous: true,
+                })
+                // Scale the canvas to fit to the map
+                this.mapGridClient.on('change', () => {
+                    // Especifica el factor de escala adicional
+                    const scaleFactor = 0.15; // Puedes ajustar este valor según tus necesidades
+
+                    // Ajusta la escala del mapa multiplicando por el factor de escala
+                    const newWidth = this.mapGridClient.currentGrid.width * scaleFactor;
+                    const newHeight = this.mapGridClient.currentGrid.height * scaleFactor;
+                    this.mapViewer.scaleToDimensions(newWidth, newHeight);
+
+                    // Calcula el desplazamiento necesario para centrar el mapa
+                    const offsetX = (newWidth - this.mapGridClient.currentGrid.width) / 1.9;
+                    const offsetY = (newHeight - this.mapGridClient.currentGrid.height) / 1.9;
+
+                    // Ajusta la posición del mapa
+                    const newX = this.mapGridClient.currentGrid.pose.position.x - offsetX;
+                    const newY = this.mapGridClient.currentGrid.pose.position.y - offsetY;
+                    this.mapViewer.shift(newX, newY);
+                });
             })
 
             this.ros.on('error', (error) => {
@@ -66,6 +105,8 @@ var app = new Vue({
                 clearInterval(this.pubInterval)
                 // Clean the camera
                 document.getElementById('divCamera').innerHTML = ''
+                // close map
+                document.getElementById('map').innerHTML = ''
             })
         },
 
@@ -171,6 +212,13 @@ var app = new Vue({
     mounted() {
         // page is ready
         window.addEventListener('mouseup', this.stopDrag)
+
+        // map communication interval
+        this.interval = setInterval(() => {
+        if (this.ros != null && this.ros.isConnected) {
+            this.ros.getNodes((data) => { }, (error) => { })
+        }
+    }, 10000)
     },
 
 })
