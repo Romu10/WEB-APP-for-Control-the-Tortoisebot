@@ -50,6 +50,8 @@ var app = new Vue({
                 this.loading = false
                 // Interval for const topic publish with joint
                 this.pubInterval = setInterval(this.publish, 100)
+                // Setting up the robot camera
+                this.setCamera()
             })
 
             this.ros.on('error', (error) => {
@@ -60,7 +62,10 @@ var app = new Vue({
                 this.logs.unshift((new Date()).toTimeString() + ' - Disconnected!')
                 this.connected = false
                 this.loading = false
+                // Clean the interval variable
                 clearInterval(this.pubInterval)
+                // Clean the camera
+                document.getElementById('divCamera').innerHTML = ''
             })
         },
 
@@ -142,6 +147,23 @@ var app = new Vue({
         resetJoystickVals() {
             this.joystick.vertical = 0
             this.joystick.horizontal = 0
+        },
+
+        // Connector to the web_video_server
+        setCamera: function() {
+            let without_wss = this.rosbridge_address.split('wss://')[1]
+            console.log(without_wss)
+            let domain = without_wss.split('/')[0] + '/' + without_wss.split('/')[1]
+            console.log(domain)
+            let host = domain 
+            let viewer = new MJPEGCANVAS.Viewer({
+                divID: 'divCamera',
+                host: host,
+                width: 320,
+                height: 240,
+                topic: '/camera/image_raw',
+                ssl: true,              
+            })
         },
 
     },
