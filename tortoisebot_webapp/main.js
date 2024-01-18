@@ -8,7 +8,7 @@ var app = new Vue({
         ros: null,
         logs: [],
         loading: false,
-        rosbridge_address: 'wss://i-016ab264be577d6bf.robotigniteacademy.com/65624ca6-92e5-402c-a347-1f183dcfb868/rosbridge/',
+        rosbridge_address: 'wss://i-08066925b0d9f372e.robotigniteacademy.com/586ea8cc-6457-4b9b-a53f-79e5881356fd/rosbridge/',
         port: '9090',
 
         // dragging data
@@ -38,6 +38,14 @@ var app = new Vue({
         viewer: null,
         tfClient: null,
         urdfClient: null,
+        // Action 
+        goal: null,
+        action: {
+            goal: { x: 0.0, y: 0.0},
+            feedback: { position: '', state: ''},
+            result: { result: null },
+            status: { status: 0, text: '' },
+        }
 
     },
 
@@ -137,7 +145,7 @@ var app = new Vue({
             topic.publish(message)
         },
 
-        // Used for send command with a button
+        // Used for send command Home
         sendCommand: function() {
             let topic = new ROSLIB.Topic({
                 ros: this.ros,
@@ -257,6 +265,81 @@ var app = new Vue({
         },
         unset3DViewer() {
             document.getElementById('div3DViewer').innerHTML = ''
+        },
+
+        // Action Server stuff
+        sendGoal: function() {
+            let actionClient = new ROSLIB.ActionClient({
+                ros : this.ros,
+                serverName : '/tortoisebot_as',
+                actionName : 'course_web_dev_ros/WaypointActionAction'
+            })
+
+            this.goal = new ROSLIB.Goal({
+                actionClient : actionClient,
+                goalMessage: {
+                    position: this.action.goal
+                }
+            })
+
+            this.goal.on('status', (status) => {
+                this.action.status = status
+            })
+
+            this.goal.on('feedback', (feedback) => {
+                this.action.feedback = feedback
+            })
+
+            this.goal.on('result', (result) => {
+                this.action.result = result
+            })
+
+            this.goal.send()
+        },
+        cancelGoal: function() {
+            this.goal.cancel()
+        },
+
+        // Buttons actions 
+        waypoint1: function(){
+            this.action.goal = { x: 0.60, y: -0.45}
+            this.sendGoal()
+        },
+        waypoint2: function(){
+            this.action.goal = { x: 0.70, y: -0.04}
+            this.sendGoal()
+        },
+        waypoint3: function(){
+            this.action.goal = { x: 0.64, y: 0.49}
+            this.sendGoal()
+        },
+        waypoint4: function(){
+            this.action.goal = { x: 0.25, y: 0.52}
+            this.sendGoal()
+        },
+        waypoint5: function(){
+            this.action.goal = { x: 0.18, y: 0.04}
+            this.sendGoal()
+        },
+        waypoint6: function(){
+            this.action.goal = { x: -0.16, y: -0.02}
+            this.sendGoal()
+        },
+        waypoint7: function(){
+            this.action.goal = { x: -0.28, y: 0.49}
+            this.sendGoal()
+        },
+        waypoint8: function(){
+            this.action.goal = { x: -0.71, y: 0.50}
+            this.sendGoal()
+        },
+        waypoint9: function(){
+            this.action.goal = { x: -0.18, y: -0.47}
+            this.sendGoal()
+        },
+        waypoint10: function(){
+            this.action.goal = { x: -0.56, y: -0.49}
+            this.sendGoal()
         },
 
     },

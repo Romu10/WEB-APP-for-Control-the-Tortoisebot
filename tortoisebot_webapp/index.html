@@ -117,8 +117,10 @@
             </div>
 
             <div class="col-9">
-
-                <h3>Controls</h3>
+    
+                <div class="card mt-2">
+                    <h3 class="ml-2">Tortoisebot Controls</h3>                
+                </div>
 
                 <div class="row">
 
@@ -207,33 +209,78 @@
 
                             <div class="card-body">
 
-                                <div class="col-md-4">
+                                <div class="row">
 
-                                    <!-- Joystick visibility -->
-                                    <div class="card">
-                                        <div class="card-body text-center">
-                                            <h2 class="text-center">Joystick</h2>
-                                            <hr>
-                                            <p>Some actions for the robot</p>
-                                            <div id="dragstartzone" @mousedown="startDrag" @mousemove="doDrag">
+                                    <div class="col-md-4">
+                                        <!-- Joystick visibility -->
+                                        <div class="card">
+                                            <div class="card-body text-center">
+                                                <h2 class="text-center">Joystick</h2>
+                                                <hr>
+                                                <div id="dragstartzone" @mousedown="startDrag" @mousemove="doDrag"></div>
+                                                <div id="dragCircle" :style="dragCircleStyle"></div>
                                             </div>
-                                            <div id="dragCircle" :style="dragCircleStyle"></div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="card">
-                                        <div class="card-body">
-                                            <h2 class="text-center">Joystick values</h2>
-                                            <hr />
-                                            <p>Vertical: {{ joystick.vertical.toFixed(3) }}</p>
-                                        
-                                            <p>Horizontal: {{ joystick.horizontal.toFixed(3) }}</p>
+
+                                    <div class="col-md-4">
+                                        <!-- Joystick values -->
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <h2 class="text-center">Joystick values</h2>
+                                                <hr />
+                                                <p><strong>Vertical</strong></p>
+                                                <p>{{ joystick.vertical.toFixed(3) }}</p>
+                                                <p><strong>Horizontal</strong></p>
+                                                <p>{{ joystick.horizontal.toFixed(3) }}</p>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <!-- Waypoints status -->
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <h3 class="text-center">Waypoint Status</h3>
+                                                <hr />
+                                                <p><strong>Goal</strong></p>
+                                                <p>X: {{ action.goal.x }} Y: {{ action.goal.y }}</p>
+                                                <hr />
+                                                <p><strong>Current Position</strong></p>
+                                                <p>{{ action.feedback.position }}</p>
+                                                <hr />
+                                                <p><strong>State</strong></p>
+                                                <p>{{ action.feedback.state }}</p>
+                                                <hr />
+                                                <p><strong>Success</strong></p>
+                                                <p>{{ action.result.success}}</p>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <h2 class="text-center">Waypoints</h2>
+                                                <hr />
+                                                <div class="col-md-12 d-flex flex-column justify-content-between align-items-center">
+                                                    <!-- Waypoints buttons-->
+                                                    <button type="button" class="btn btn-dark mb-2" :disabled="!connected || action.status.status == 1" @click="waypoint1">Waypoint 1</button>
+                                                    <button type="button" class="btn btn-dark mb-2" :disabled="!connected || action.status.status == 1" @click="waypoint2">Waypoint 2</button>
+                                                    <button type="button" class="btn btn-dark mb-2" :disabled="!connected || action.status.status == 1" @click="waypoint3">Waypoint 3</button>
+                                                    <button type="button" class="btn btn-dark mb-2" :disabled="!connected || action.status.status == 1" @click="waypoint4">Waypoint 4</button>
+                                                    <button type="button" class="btn btn-dark mb-2" :disabled="!connected || action.status.status == 1" @click="waypoint5">Waypoint 5</button>
+                                                    <button type="button" class="btn btn-dark mb-2" :disabled="!connected || action.status.status == 1" @click="waypoint6">Waypoint C6</button>
+                                                    <button type="button" class="btn btn-dark mb-2" :disabled="!connected || action.status.status == 1" @click="waypoint7">Waypoint R7 </button>
+                                                    <button type="button" class="btn btn-dark mb-2" :disabled="!connected || action.status.status == 1" @click="waypoint8">Waypoint R8</button>
+                                                    <button type="button" class="btn btn-dark mb-2" :disabled="!connected || action.status.status == 1" @click="waypoint9">Waypoint L9 </button>
+                                                    <button type="button" class="btn btn-dark mb-2" :disabled="!connected || action.status.status == 1" @click="waypoint10">Waypoint L10</button>
+                                                    
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                
+
                                 </div>
-                                <!-- Joystick visibility -->
 
                             </div>
 
